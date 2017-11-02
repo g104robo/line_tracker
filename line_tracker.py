@@ -7,6 +7,10 @@ from mpl_toolkits.mplot3d import Axes3D
 def func(v, t, p, r, b):
     return [-p*v[0]+p*v[1], -v[0]*v[2]+r*v[0]-v[1], v[0]*v[1]-b*v[2]]
 
+def tracker(phi,k,v):
+    dphidt = 
+    return [
+
 p = 10
 r = 28
 b = 8/3
