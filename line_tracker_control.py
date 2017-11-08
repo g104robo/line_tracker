@@ -2,10 +2,10 @@
 from control.matlab import *
 import numpy as np
 
-k1 = 4.0
-k2 = 3.0
-k3 = 2.0
-Vd = 1.0
+# k1 = 4.0
+# k2 = 3.0
+# k3 = 2.0
+# Vd = 1.0
 
 def check_ctrb(A,B):
     Uc = ctrb(A,B)  #可制御性行列の計算
