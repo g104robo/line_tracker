@@ -10,16 +10,24 @@ import matplotlib.pyplot as plt
 # k3 = 2.0
 # Vd = 1.0
 
-phi0 = [ math.pi/6, 0.0, 0.0]
+phi0 = [1.0, math.pi/6, 0.0, 0.0]
+#eta0 = 1.0
 Vd = 1.0
 
 # def func(phi, k, Vd):
 #     ret = [phi[1], phi[2], k[3]*Vd*phi[0] + k[1]*phi[1] + k[2]*phi[2]]
 #     return ret
 
-def func(phi, time, k1, k2, k3, Vd):
-    ret = [phi[1], phi[2], -k3*Vd*phi[0] - k1*phi[1] - k2*phi[2]]
+def func_phi(phi, time, k1, k2, k3, Vd):
+    ret = [Vd*phi[0], phi[2], phi[3], -k3*Vd*phi[1] - k1*phi[2] - k2*phi[3]]
     return ret
+
+# def func_phi(phi, time, k1, k2, k3, Vd):
+#     ret = [phi[1], phi[2], -k3*Vd*phi[0] - k1*phi[1] - k2*phi[2]]
+#     return ret
+
+# def func_eta(eta, time, Vd):
+#     return -Vd*eta
 
 def check_ctrb(A,B):
     Uc = ctrb(A,B)  #可制御性行列の計算
@@ -39,6 +47,8 @@ def main():
     #所望の極
     poles1 = [-1,-1+1j,-1-1j]
     poles2 = [-2,-2+1j,-2-1j]
+    poles3 = [-2,-2+5j,-2-5j]
+    poles4 = [-1,-5+5j,-5-5j]
     #ゲインの設計（極配置法）
     F = place(A,B,poles1)
     #計算結果の表示
@@ -47,10 +57,16 @@ def main():
     # print(F[0][0])
     # print(F[0][1])
     # print(F[0][2])
-    time = np.linspace(0,50,1000)
-    phi_out = odeint(func, phi0, time, args=(F[0][0],F[0][1],F[0][2],Vd))
-    print(phi_out)
-    plt.plot(time, phi_out)
+    time = np.linspace(0,30,1000)
+    phi_out = odeint(func_phi, phi0, time, args=(F[0][0],F[0][1],F[0][2],Vd))
+    #eta_out = odeint(func_eta, eta0, time, args=(Vd,))
+    #print(phi_out[:, 0])
+    plt.plot(time, phi_out[:, 0], label="eta")
+    plt.plot(time, phi_out[:, 1], label="phi")
+    plt.plot(time, phi_out[:, 2], label="ang_vel")
+    plt.plot(time, phi_out[:, 3], label="ang_acc")
+    plt.plot(time, eta_out, label="eta")
+    plt.legend()
     plt.show()
 
 if __name__ == "__main__":
