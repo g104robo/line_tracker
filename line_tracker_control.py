@@ -23,9 +23,10 @@ def main():
     #システムが可制御でなければ終了
     if check_ctrb(A,B) == -1 : exit
     #所望の極
-    poles = [-1,-1+1j,-1-1j]
+    poles1 = [-1,-1+1j,-1-1j]
+    poles2 = [-2,-2+1j,-2-1j]
     #ゲインの設計（極配置法）
-    F = place(A,B,poles)
+    F = place(A,B,poles2)
     #計算結果の表示
     print("gain:",F)
     print("poles:", np.linalg.eigvals(A-B*F))
