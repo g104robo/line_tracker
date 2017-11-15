@@ -20,11 +20,11 @@ Vd = 1.0
 #     return ret
 
 def func_phi(phi, time, k1, k2, k3, Vd):
-    ret = [phi[0], phi[2], -k3*Vd*phi[0] - k1*phi[1] - k2*phi[2]]
+    ret = [phi[1], phi[2], -k3*Vd*phi[0] - k1*phi[1] - k2*phi[2]]
     return ret
 
 def func_eta(eta, time, k1, k2, k3, Vd):
-    ret = [Vd*eta[0], eta[2], eta[3], -k3*Vd*eta[1] - k1*eta[2] - k2*eta[3]]
+    ret = [-Vd*eta[1], eta[2], eta[3], -k3*Vd*eta[1] - k1*eta[2] - k2*eta[3]]
     return ret
 
 # def func_phi(phi, time, k1, k2, k3, Vd):
@@ -65,14 +65,16 @@ def main():
     # eta_poles4 = [-1,-1,-5+5j,-5-5j]
 
     #ゲインの設計（極配置法）
-    F = place(A,B,poles1)
+    F = place(A,B,poles3)
     #計算結果の表示
     print("gain:",F)
     print("poles:", np.linalg.eigvals(A-B*F))
-    # print(F[0][0])
-    # print(F[0][1])
-    # print(F[0][2])
-    time = np.linspace(0,30,1000)
+    phi0[2] = -F[0][0]*phi0[0]-F[0][2]*eta0[0]
+    eta0[3] = -F[0][0]*phi0[0]-F[0][2]*eta0[0]
+    print(phi0)
+    print(eta0)
+
+    time = np.linspace(0,50,1000)
     phi_out = odeint(func_phi, phi0, time, args=(F[0][0],F[0][1],F[0][2],Vd))
     eta_out = odeint(func_eta, eta0, time, args=(F[0][0],F[0][1],F[0][2],Vd))
     
