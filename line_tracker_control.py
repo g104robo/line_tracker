@@ -5,10 +5,6 @@ import math as math
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
-# k1 = 4.0
-# k2 = 3.0
-# k3 = 2.0
-# Vd = 1.0
 
 phi0 = [math.pi/6, 0.0, 0.0]
 #eta0 = [1.0, math.pi/6, 0.0, 0.0]
@@ -42,6 +38,12 @@ def check_ctrb(A,B):
     if Nu == N: return 0
     else: return -1
 
+def make_patch_spines_invisible(ax):
+    ax.set_frame_on(True)
+    ax.patch.set_visible(False)
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+
 def main():
     #システム行列の定義
     #A = np.array([[0,1,0],[0,0,1],[k3*Vd, k1, k2]])
@@ -66,7 +68,7 @@ def main():
     # eta_poles4 = [-1,-1,-5+5j,-5-5j]
 
     #ゲインの設計（極配置法）
-    F = place(A,B,poles5)
+    F = place(A,B,poles1)
     #計算結果の表示
     print("gain:",F)
     print("poles:", np.linalg.eigvals(A-B*F))
@@ -81,12 +83,52 @@ def main():
     
     #eta_out = odeint(func_eta, eta0, time, args=(Vd,))
     #print(phi_out[:, 0])
-    plt.plot(time, phi_out[:, 0], label="phi")
-    plt.plot(time, phi_out[:, 1], label="ang_vel")
-    plt.plot(time, phi_out[:, 2], label="ang_acc")
-    #plt.plot(time, eta_out[:, 0], label="eta")
-    plt.legend()
+    # plt.plot(time, phi_out[:, 0], label="phi")
+    # plt.plot(time, phi_out[:, 1], label="ang_vel")
+    # plt.plot(time, phi_out[:, 2], label="ang_acc")
+    # #plt.plot(time, eta_out[:, 0], label="eta")
+    # plt.xlabel("[sec]")
+    # plt.ylabel("[rad]")
+    # plt.title("line_tracker")
+    # plt.legend()
+    # plt.show()
+
+    fig, phi = plt.subplots()
+    fig.subplots_adjust(right=0.75)
+    ang_vel = phi.twinx()
+    ang_acc = phi.twinx()
+
+    ang_acc.spines["right"].set_position(("axes",1.2))
+    make_patch_spines_invisible(ang_acc)
+    ang_acc.spines["right"].set_visible(True)
+
+    phi1, = phi.plot(time, phi_out[:, 0],"b-", label="phi")
+    phi2, = ang_vel.plot(time, phi_out[:, 1],"r-", label="ang_vel")
+    phi3, = ang_acc.plot(time, phi_out[:, 2],"g-", label="ang_acc")
+
+    phi.yaxis.label.set_color(phi1.get_color())
+    ang_vel.yaxis.label.set_color(phi2.get_color())
+    ang_acc.yaxis.label.set_color(phi3.get_color())
+
+    tkw = dict(size=4, width=1.5)
+    phi.tick_params(axis='y', colors=phi1.get_color(), **tkw)
+    ang_vel.tick_params(axis='y', colors=phi2.get_color(), **tkw)
+    ang_acc.tick_params(axis='y', colors=phi3.get_color(), **tkw)
+    phi.tick_params(axis='x', **tkw)
+
+    phi.set_xlabel("time[sec]")
+    phi.set_ylabel("phi[rad]")
+    ang_vel.set_ylabel("ang_vel[rad/s]")
+    ang_acc.set_ylabel("ang_acc[rad/s2]")
+
+    lines = [phi1, phi2, phi3]
+
+    phi.legend(lines, [l.get_label() for l in lines])
     plt.show()
+
+
+
+
 
 if __name__ == "__main__":
     main()
