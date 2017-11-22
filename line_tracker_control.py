@@ -68,7 +68,7 @@ def main():
     # eta_poles4 = [-1,-1,-5+5j,-5-5j]
 
     #ゲインの設計（極配置法）
-    F = place(A,B,poles1)
+    F = place(A,B,poles5)
     #計算結果の表示
     print("gain:",F)
     print("poles:", np.linalg.eigvals(A-B*F))
@@ -80,6 +80,21 @@ def main():
     time = np.linspace(0,50,1000)
     phi_out = odeint(func_phi, phi0, time, args=(F[0][0],F[0][1],F[0][2],Vd))
     #eta_out = odeint(func_eta, eta0, time, args=(F[0][0],F[0][1],F[0][2],Vd))
+    #print(max(phi_out[:,0]))
+    phi_max0 = max(phi_out[:,0])
+    phi_max1 = max(phi_out[:,1])
+    phi_max2 = max(phi_out[:,2])
+    phi_max=max(phi_max0, phi_max1, phi_max2)
+    print(phi_max)
+    phi_min0 = min(phi_out[:,0])
+    phi_min1 = min(phi_out[:,1])
+    phi_min2 = min(phi_out[:,2])
+    phi_min=min(phi_min0, phi_min1, phi_min2)
+    print(phi_min)
+    #print(max(phi_out[:,0], phi_out[:,1], phi_out[:,2]))
+    
+    #print(abs(min(phi_out[:,0])))
+    #print(max(abs(min(phi_out[:,0])), abs(max(phi_out[:,0]))))
     
     #eta_out = odeint(func_eta, eta0, time, args=(Vd,))
     #print(phi_out[:, 0])
@@ -106,6 +121,10 @@ def main():
     phi2, = ang_vel.plot(time, phi_out[:, 1],"r-", label="ang_vel")
     phi3, = ang_acc.plot(time, phi_out[:, 2],"g-", label="ang_acc")
 
+    phi.set_ylim(phi_min*1.2,phi_max*1.2)
+    ang_vel.set_ylim(phi_min*1.2,phi_max*1.2)
+    ang_acc.set_ylim(phi_min*1.2,phi_max*1.2)
+
     phi.yaxis.label.set_color(phi1.get_color())
     ang_vel.yaxis.label.set_color(phi2.get_color())
     ang_acc.yaxis.label.set_color(phi3.get_color())
@@ -125,10 +144,6 @@ def main():
 
     phi.legend(lines, [l.get_label() for l in lines])
     plt.show()
-
-
-
-
 
 if __name__ == "__main__":
     main()
